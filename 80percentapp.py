@@ -114,14 +114,52 @@ st.set_page_config(page_title="The 80% Bill", page_icon="🇺🇸", layout="wide
 # --- CUSTOM THEME ---
 st.markdown("""
 <style>
+    /* Force the main background to be Light */
     .stApp { background-color: #F9F7F2; }
-    h1, h2, h3, h4 { color: #0C2340 !important; }
+    
+    /* Text Colors */
+    h1, h2, h3, h4, p, li, label { color: #0C2340 !important; }
+    
+    /* --- FIX 1: TABS (Invisible Text) --- */
+    /* Force unselected tabs to have dark text */
+    button[data-baseweb="tab"] div p {
+        color: #0C2340 !important;
+        font-weight: 600;
+    }
+    /* Force selected tabs to have a distinct look */
+    button[data-baseweb="tab"][aria-selected="true"] div p {
+        color: #BF0A30 !important; /* Red for selected */
+    }
+    /* The underline bar color */
+    div[data-baseweb="tab-highlight"] {
+        background-color: #BF0A30 !important;
+    }
+
+    /* --- FIX 2: INPUT FIELDS (Black Boxes) --- */
+    /* Force input fields to have white background and dark text */
+    input.st-ai {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+    /* Fix the placeholder text (the "hint" text) */
+    input.st-ai::placeholder {
+        color: #666 !important;
+    }
+    /* Force the label above the input to be dark */
+    .stTextInput label {
+        color: #0C2340 !important;
+    }
+
+    /* Buttons */
     div.stButton > button {
         background-color: #0C2340; color: white; border: none; padding: 10px 20px; border-radius: 5px;
     }
     div.stButton > button:hover {
         background-color: #BF0A30; color: white; border: none;
     }
+    
+    /* Article Boxes */
     .article-box {
         background-color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;
         border-left: 6px solid #0C2340; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
