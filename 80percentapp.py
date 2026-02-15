@@ -114,68 +114,77 @@ st.set_page_config(page_title="The 80% Bill", page_icon="🇺🇸", layout="wide
 # --- CUSTOM THEME ---
 st.markdown("""
 <style>
-    /* Force the main background to be Light */
-    .stApp { background-color: #F9F7F2; }
-    
-    /* Text Colors */
-    h1, h2, h3, h4, p, li, label { color: #0C2340 !important; }
-    
-    /* --- FIX 1: TABS (Invisible Text) --- */
-    /* Force unselected tabs to have dark text */
-    button[data-baseweb="tab"] div p {
-        color: #0C2340 !important;
-        font-weight: 600;
+    /* 1. FORCE MAIN BACKGROUND */
+    .stApp { 
+        background-color: #F9F7F2; 
     }
-    /* Force selected tabs to have a distinct look */
-    button[data-baseweb="tab"][aria-selected="true"] div p {
-        color: #BF0A30 !important; /* Red for selected */
-    }
-    /* The underline bar color */
-    div[data-baseweb="tab-highlight"] {
-        background-color: #BF0A30 !important;
+    
+    /* 2. FORCE TEXT COLORS (Global Override) */
+    h1, h2, h3, h4, h5, h6, p, li, span, label, .stMarkdown { 
+        color: #0C2340 !important; 
     }
 
-    /* --- FIX 2: INPUT FIELDS (Black Boxes) --- */
-    /* Force input fields to have white background and dark text */
-    input.st-ai {
-        background-color: white !important;
-        color: black !important;
+    /* 3. FIX INPUT BOXES (Force White Background / Black Text) */
+    /* Use generic 'input' selector to catch everything */
+    input[type="text"], input[type="email"], textarea {
+        background-color: #ffffff !important; 
+        color: #000000 !important; 
         border: 1px solid #ccc !important;
     }
-    /* Fix the placeholder text (the "hint" text) */
-    input.st-ai::placeholder {
-        color: #666 !important;
+    /* Placeholder Text (The "hint" text inside the box) */
+    ::placeholder {
+        color: #666666 !important;
+        opacity: 1; /* Firefox fix */
     }
-    /* Force the label above the input to be dark */
-    .stTextInput label {
-        color: #0C2340 !important;
+    /* Fix Selectbox/Dropdowns (which are technically divs, not inputs) */
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-color: #ccc !important;
+    }
+    /* The text inside the selected option */
+    div[data-baseweb="select"] span {
+        color: #000000 !important;
     }
 
-    /* Buttons */
+    /* 4. FIX BUTTONS (High Contrast) */
+    /* Target the button AND any text inside it */
     div.stButton > button {
-        background-color: #0C2340; color: white; border: none; padding: 10px 20px; border-radius: 5px;
+        background-color: #0C2340 !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: bold !important;
+    }
+    div.stButton > button * {
+        color: #ffffff !important; /* Force internal text to be white */
     }
     div.stButton > button:hover {
-        background-color: #BF0A30; color: white; border: none;
+        background-color: #BF0A30 !important;
+        color: #ffffff !important;
     }
-    
-    /* Article Boxes */
+
+    /* 5. TABS (Fix Visibility) */
+    button[data-baseweb="tab"] {
+        color: #0C2340 !important; /* Unselected tabs */
+    }
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #BF0A30 !important; /* Selected tab */
+        border-bottom-color: #BF0A30 !important;
+    }
+
+    /* 6. ARTICLE BOX STYLING */
     .article-box {
         background-color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;
         border-left: 6px solid #0C2340; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        position: relative; 
     }
     .article-title { font-weight: 800; color: #0C2340; font-size: 20px; margin-bottom: 5px; }
     .article-desc { color: #333; font-size: 16px; margin-bottom: 12px; }
-    .note-text { font-size: 14px; color: #555; font-style: italic; background-color: #f0f0f0; padding: 5px; border-radius: 4px; margin-bottom: 10px; display: block; }
     
     .bill-link { 
         text-decoration: none; color: white !important; font-weight: bold; font-size: 14px;
         background-color: #BF0A30; padding: 8px 16px; border-radius: 5px; display: inline-block;
         box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.2s;
-        position: relative; z-index: 99; 
     }
-    .bill-link:hover { background-color: #0C2340; transform: translateY(-1px); }
 </style>
 """, unsafe_allow_html=True)
 
