@@ -125,50 +125,46 @@ st.markdown("""
     }
 
     /* 3. FIX INPUT BOXES (Force White Background / Black Text) */
-    /* Use generic 'input' selector to catch everything */
     input[type="text"], input[type="email"], textarea {
         background-color: #ffffff !important; 
         color: #000000 !important; 
         border: 1px solid #ccc !important;
     }
-    /* Placeholder Text (The "hint" text inside the box) */
-    ::placeholder {
-        color: #666666 !important;
-        opacity: 1; /* Firefox fix */
-    }
-    /* Fix Selectbox/Dropdowns (which are technically divs, not inputs) */
+    ::placeholder { color: #666666 !important; opacity: 1; }
     div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
         color: #000000 !important;
-        border-color: #ccc !important;
     }
-    /* The text inside the selected option */
-    div[data-baseweb="select"] span {
-        color: #000000 !important;
-    }
+    div[data-baseweb="select"] span { color: #000000 !important; }
 
-    /* 4. FIX BUTTONS (High Contrast) */
-    /* Target the button AND any text inside it */
+    /* 4. FIX BUTTONS (The "Nuclear" Option) */
     div.stButton > button {
         background-color: #0C2340 !important;
-        color: #ffffff !important;
         border: none !important;
-        font-weight: bold !important;
     }
-    div.stButton > button * {
-        color: #ffffff !important; /* Force internal text to be white */
+    
+    /* 4b. THIS IS THE FIX FOR THE BLUE TEXT */
+    /* Target the paragraph tag INSIDE the button */
+    div.stButton > button p {
+        color: #ffffff !important; 
     }
-    div.stButton > button:hover {
-        background-color: #BF0A30 !important;
+    /* Target the button text directly if it's not in a p tag */
+    div.stButton > button {
         color: #ffffff !important;
     }
 
-    /* 5. TABS (Fix Visibility) */
-    button[data-baseweb="tab"] {
-        color: #0C2340 !important; /* Unselected tabs */
+    /* Hover State */
+    div.stButton > button:hover {
+        background-color: #BF0A30 !important;
     }
+    div.stButton > button:hover p {
+        color: #ffffff !important;
+    }
+
+    /* 5. TABS */
+    button[data-baseweb="tab"] { color: #0C2340 !important; }
     button[data-baseweb="tab"][aria-selected="true"] {
-        color: #BF0A30 !important; /* Selected tab */
+        color: #BF0A30 !important;
         border-bottom-color: #BF0A30 !important;
     }
 
@@ -290,7 +286,6 @@ with tab2:
 
 with tab3:
     st.markdown("# Every single article below is supported by at least 80% of American voters.")
-    st.divider()
     
 # FORMAT: (Title, Description, Link, Optional_Note)
     articles = [
