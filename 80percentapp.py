@@ -338,7 +338,7 @@ with tab2:
             "VII. Medicare Drug Negotiation", 
             "1. H.R. 4895: Expands negotiation to 50 drugs/year and applies lower prices to private insurance.\n2. H.R. 853: Closes the 'Orphan Drug' loophole.", 
             "https://www.congress.gov/bill/118th-congress/house-bill/4895", 
-            "Note: This entry combines two bills to protect all Americans (not just seniors) and stop Big Pharma from gaming the 'rare disease' system.", None
+            "Note: This entry combines two bills to protect all Americans (not just seniors) and stop Big Pharma from gaming the 'rare disease' system."
         ),
         (
             "VIII. Fair Elections & End Gerrymandering", 
@@ -355,7 +355,7 @@ with tab2:
             "X. Ban Corporate Purchase of Single Family Homes", 
             "Imposes a massive tax penalty on corporations buying *existing* homes, making it unprofitable. Explicitly allows them to *build* new rental homes to increase supply.", 
             "https://www.congress.gov/bill/118th-congress/senate-bill/3402", 
-            "Note: This uses an excise tax (not a ban) to bypass the 'Takings Clause' and forces hedge funds to sell existing homes over 10 years.", None
+            "Note: This uses an excise tax (not a ban) to bypass the 'Takings Clause' and forces hedge funds to sell existing homes over 10 years."
         ),
         (
             "XI. Fund Social Security", 
@@ -373,7 +373,7 @@ with tab2:
             "XIII. Ban 'Dark Money' (Overturn Citizens United)", 
             "A provision to overturn *Citizens United* and ban corporate dark money. Requires a 2/3rds vote to survive the Supreme Court.", 
             "https://www.congress.gov/bill/118th-congress/senate-joint-resolution/4", 
-            "Severability Note: This clause overturns Citizens United, but we acknowledge it will be struck down by the Court unless this bill passes with the votes required to amend the Constitution (2/3rds).", None
+            "Severability Note: This clause overturns Citizens United, but we acknowledge it will be struck down by the Court unless this bill passes with the votes required to amend the Constitution (2/3rds)."
         ),
         (
             "XIV. Paid Family Leave", 
@@ -384,7 +384,7 @@ with tab2:
         (
             "XV. Release the Epstein Files", 
             "Mandates the release of all documents. Explicitly bans redactions of perpetrator names while strictly protecting the identities of underage victims.", 
-            "https://www.congress.gov/bill/118th-congress/senate-bill/2557", 
+            "https://www.congress.gov/bill/118th-congress/senate-bill/2557", None
         ),
         (
             "XVI. Veterans Care Choice", 
@@ -408,8 +408,7 @@ with tab2:
             "XIX. Right to Repair (Ban 'Parts Pairing')", 
             "Guarantees access to parts/manuals for cars AND electronics. Explicitly bans 'software pairing' that blocks genuine 3rd-party repairs.", 
             "https://www.congress.gov/bill/118th-congress/house-bill/906", 
-            "Note: This entry combines the automotive 'REPAIR Act' (H.R. 906) with the 'Fair Repair Act' standards to stop companies from using software to kill independent repair.",
-            None
+            "Note: This entry combines the automotive 'REPAIR Act' (H.R. 906) with the 'Fair Repair Act' standards to stop companies from using software to kill independent repair."
         ),
         (
             "XX. Ban Junk Fees", 
