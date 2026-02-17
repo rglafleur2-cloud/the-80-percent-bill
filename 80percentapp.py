@@ -168,15 +168,15 @@ st.markdown("""
     }
     /* Force the text inside to match */
     [data-testid="stLinkButton"] p {
-        color: #000000 !important;            /* <--- CHANGE TEXT COLOR HERE TOO */
+        color: #0C2340 !important;            /* <--- CHANGE TEXT COLOR HERE TOO */
     }
     /* Hover effect */
     [data-testid="stLinkButton"]:hover {
         background-color: #FFC107 !important; /* A slightly darker shade for hover */
-        color: #000000 !important;
+        color: #0C2340 !important;
     }
     [data-testid="stLinkButton"]:hover p {
-        color: #000000 !important;
+        color: #0C2340 !important;
     }
 
     /* 6. TABS */
