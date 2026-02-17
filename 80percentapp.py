@@ -382,9 +382,10 @@ with tab2:
             None
         ),
         (
-            "XV. Release the Epstein Files", 
-            "Mandates the release of all documents. Explicitly bans redactions of perpetrator names while strictly protecting the identities of underage victims.", 
-            "https://www.congress.gov/bill/118th-congress/senate-bill/2557", None
+           "XV. Release the Epstein Files", 
+            "Mandates the full, unredacted release of all documents, including those hidden by previous partial releases.", 
+            "https://www.congress.gov/bill/119th-congress/house-resolution/577", 
+            "Note: While some files were released in late 2025, many names were redacted. This resolution demands the immediate release of ALL documents without hiding names."
         ),
         (
             "XVI. Veterans Care Choice", 
@@ -401,7 +402,7 @@ with tab2:
         (
             "XVIII. Close Tax Loopholes", 
             "Reclassifies 'Carried Interest' as ordinary income, regardless of holding period. Ensures hedge fund managers pay the same tax rate as nurses and teachers.", 
-            "https://www.congress.gov/bill/118th-congress/house-bill/1068", 
+            "https://www.congress.gov/bill/118th-congress/senate-bill/4123", 
             None
         ),
         (
