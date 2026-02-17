@@ -171,14 +171,49 @@ with st.sidebar:
     st.divider()
     
     # --- ADMIN PANEL (Google Sheets Version) ---
+    # with st.expander("Admin Access"):
+    #     if st.button("Check Connection"):
+    #         try:
+    #             conn = st.connection("gsheets", type=GSheetsConnection)
+    #             df = conn.read(worksheet="Sheet1", ttl=0)
+    #             st.success(f"Connected! Total Signatures: {len(df)}")
+    #         except Exception as e:
+    #             st.error(f"Connection Failed: {e}")
     with st.expander("Admin Access"):
-        if st.button("Check Connection"):
-            try:
-                conn = st.connection("gsheets", type=GSheetsConnection)
-                df = conn.read(worksheet="Sheet1", ttl=0)
-                st.success(f"Connected! Total Signatures: {len(df)}")
-            except Exception as e:
-                st.error(f"Connection Failed: {e}")
+        # 1. Check if the local CSV still exists
+        if os.path.isfile('pledges.csv'):
+            st.info(f"Local CSV found! ({os.path.getsize('pledges.csv')} bytes)")
+            
+            # Button to Migrate Data
+            if st.button("🚀 Move CSV Data to Google Sheets"):
+                try:
+                    # Load Local CSV
+                    csv_df = pd.read_csv('pledges.csv')
+                    st.write(f"Found {len(csv_df)} signatures in CSV.")
+
+                    # Load Google Sheet
+                    conn = st.connection("gsheets", type=GSheetsConnection)
+                    sheet_df = conn.read(worksheet="Sheet1", ttl=0)
+                    
+                    # Combine & Remove Duplicates (based on Email)
+                    combined_df = pd.concat([sheet_df, csv_df], ignore_index=True)
+                    combined_df.drop_duplicates(subset=['Email'], inplace=True)
+                    
+                    # Upload back to Google Sheets
+                    conn.update(worksheet="Sheet1", data=combined_df)
+                    
+                    st.success("✅ Success! All old signatures are now in Google Sheets.")
+                    st.balloons()
+                    
+                except Exception as e:
+                    st.error(f"Migration failed: {e}")
+                    
+            # Download Button (Backup)
+            df_download = pd.read_csv('pledges.csv')
+            st.download_button("📥 Download CSV Backup", df_download.to_csv(index=False), "pledges_backup.csv")
+
+        else:
+            st.warning("No local 'pledges.csv' file found. It may have been deleted during a restart.")
 
 # --- MAIN PAGE ---
 
