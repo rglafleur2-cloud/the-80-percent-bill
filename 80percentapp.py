@@ -95,11 +95,12 @@ def send_email_code(to_email):
         return None
 
 def save_pledge(name, email, district, rep_name):
-    # SAVES DIRECTLY TO GOOGLE SHEETS
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
+        # Force a fresh download of the data (ttl=0)
         existing_data = conn.read(worksheet="Sheet1", ttl=0)
         
+        # Create the new row
         new_row = pd.DataFrame([{
             "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "Name": name,
@@ -108,10 +109,16 @@ def save_pledge(name, email, district, rep_name):
             "Rep": rep_name
         }])
         
+        # Combine old + new
         updated_df = pd.concat([existing_data, new_row], ignore_index=True)
+        
+        # Upload
         conn.update(worksheet="Sheet1", data=updated_df)
+        return True  # <--- REPORT SUCCESS
+        
     except Exception as e:
-        st.error(f"Error saving to cloud: {e}")
+        st.error(f"⚠️ GOOGLE SHEETS ERROR: {e}")
+        return False # <--- REPORT FAILURE
 
 # --- THE APP UI ---
 
@@ -284,13 +291,14 @@ with tab1:
                     dist, rep = st.session_state.district_info
                     if is_duplicate(email): st.error("❌ Already signed.")
                     else:
-                        save_pledge(name, email, dist, rep)
-                        st.balloons()
-                        st.success("✅ NAME CONFIRMED!")
-                        st.link_button("❤️ Donate $5 to help spread the word", DONATION_LINK)
-                        if st.button("Start Over"):
-                            st.session_state.clear()
-                            st.rerun()
+                        # ONLY SHOW BALLOONS IF SAVE RETURNS TRUE
+                        if save_pledge(name, email, dist, rep):
+                            st.balloons()
+                            st.success("✅ NAME CONFIRMED!")
+                            st.link_button("❤️ Donate $5 to help spread the word", DONATION_LINK)
+                            if st.button("Start Over"):
+                                st.session_state.clear()
+                                st.rerun()
                 else: st.error("Incorrect code.")
 
 with tab2:
