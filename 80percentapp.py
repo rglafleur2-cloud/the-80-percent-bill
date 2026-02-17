@@ -372,7 +372,7 @@ with tab2:
         (
             "XIII. Ban 'Dark Money' (Overturn Citizens United)", 
             "A provision to overturn *Citizens United* and ban corporate dark money. Requires a 2/3rds vote to survive the Supreme Court.", 
-            "https://www.congress.gov/bill/118th-congress/senate-joint-resolution/4", 
+            "https://www.congress.gov/bill/118th-congress/house-joint-resolution/54", 
             "Severability Note: This clause overturns Citizens United, but we acknowledge it will be struck down by the Court unless this bill passes with the votes required to amend the Constitution (2/3rds)."
         ),
         (
