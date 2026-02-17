@@ -160,23 +160,23 @@ st.markdown("""
 
     /* 5. LINK BUTTONS (Donation Buttons) */
     [data-testid="stLinkButton"] {
-        background-color: #FFDD00 !important; /* <--- CHANGE BUTTON COLOR HERE */
+        background-color: #ffffff !important; /* <--- CHANGE BUTTON COLOR HERE */
         border: none !important;
-        color: #000000 !important;            /* <--- CHANGE TEXT COLOR HERE */
+        color: #ffffff !important;            /* <--- CHANGE TEXT COLOR HERE */
         text-decoration: none !important;
         font-weight: 800 !important;          /* Make it bold */
     }
     /* Force the text inside to match */
     [data-testid="stLinkButton"] p {
-        color: #0C2340 !important;            /* <--- CHANGE TEXT COLOR HERE TOO */
+        color: #ffffff !important;            /* <--- CHANGE TEXT COLOR HERE TOO */
     }
     /* Hover effect */
     [data-testid="stLinkButton"]:hover {
         background-color: #FFC107 !important; /* A slightly darker shade for hover */
-        color: #0C2340 !important;
+        color: #ffffff !important;
     }
     [data-testid="stLinkButton"]:hover p {
-        color: #0C2340 !important;
+        color: #ffffff !important;
     }
 
     /* 6. TABS */
