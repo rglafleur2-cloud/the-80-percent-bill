@@ -1,21 +1,18 @@
 
 import streamlit as st
 import requests
-import csv
-import os
 import pandas as pd
 import random
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
-
 from streamlit_gsheets import GSheetsConnection
 
 # --- CONFIGURATION ---
+# These keys are now securely loaded from your secrets.toml file
 GEOCODIO_API_KEY = st.secrets["GEOCODIO_API_KEY"]
 EMAIL_ADDRESS = "the.80.percent.bill@gmail.com"
 EMAIL_PASSWORD = st.secrets["EMAIL_PASSWORD"]
-
 
 DONATION_LINK = "https://www.buymeacoffee.com/80percentbill" 
 
@@ -26,7 +23,6 @@ def find_image(options):
             return img
     return None
 
-# We only look for the LOGO now, since the Banner is removed
 LOGO_IMG = find_image(["Gemini_Generated_Image_1dkkh41dkkh41dkk.jpg", "logo.jpg", "logo.png"])
 
 # --- HELPER FUNCTIONS ---
@@ -70,12 +66,12 @@ def get_district(address):
     return None, None
 
 def is_duplicate(email):
+    # CHECKS GOOGLE SHEETS FOR DUPLICATES
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
-        # Read the sheet with specific columns to be faster
-        df = conn.read(worksheet="Sheet1", usecols=[2], ttl=0) # Column 2 is Email (0-index)
+        # Read only the Email column (index 2) to be fast
+        df = conn.read(worksheet="Sheet1", usecols=[2], ttl=0)
         if df is not None and not df.empty:
-            # Check if email exists (case insensitive)
             existing_emails = df.iloc[:, 0].astype(str).str.strip().str.lower().values
             return email.strip().lower() in existing_emails
     except Exception:
@@ -98,12 +94,11 @@ def send_email_code(to_email):
         return None
 
 def save_pledge(name, email, district, rep_name):
+    # SAVES DIRECTLY TO GOOGLE SHEETS
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
-        # 1. Read existing data
         existing_data = conn.read(worksheet="Sheet1", ttl=0)
         
-        # 2. Create new row
         new_row = pd.DataFrame([{
             "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "Name": name,
@@ -112,10 +107,8 @@ def save_pledge(name, email, district, rep_name):
             "Rep": rep_name
         }])
         
-        # 3. Combine and Update
         updated_df = pd.concat([existing_data, new_row], ignore_index=True)
         conn.update(worksheet="Sheet1", data=updated_df)
-        
     except Exception as e:
         st.error(f"Error saving to cloud: {e}")
 
@@ -123,63 +116,21 @@ def save_pledge(name, email, district, rep_name):
 
 st.set_page_config(page_title="The 80% Bill", page_icon="🇺🇸", layout="wide")
 
-# --- CUSTOM THEME (FRESH START) ---
 st.markdown("""
 <style>
-    /* 1. FORCE LIGHT MODE BACKGROUND (Crucial for Mobile) */
-    [data-testid="stAppViewContainer"] {
-        background-color: #F9F7F2;
-    }
-    [data-testid="stHeader"] {
-        background-color: #F9F7F2; /* Hides the top bar */
-    }
-
-    /* 2. TEXT COLORS - Make everything Navy by default */
-    h1, h2, h3, h4, h5, h6, p, li, label, .stMarkdown {
-        color: #0C2340 !important;
-    }
-
-    /* 3. INPUT FIELDS - The "Reset" */
-    /* This forces all text boxes to be white with black text, ignoring phone settings */
+    /* UI STYLING */
+    [data-testid="stAppViewContainer"] { background-color: #F9F7F2; }
+    [data-testid="stHeader"] { background-color: #F9F7F2; }
+    h1, h2, h3, h4, h5, h6, p, li, label, .stMarkdown { color: #0C2340 !important; }
     input, textarea, select {
         background-color: #ffffff !important;
         color: #000000 !important;
         border: 1px solid #ccc !important;
-        caret-color: #000000 !important; /* The typing cursor color */
     }
-    /* The "Hint" text inside the box */
-    ::placeholder {
-        color: #666666 !important;
-        opacity: 1;
-    }
-
-    /* 4. BUTTONS - Simple & High Contrast */
-    /* Target every single button in the app */
-    button {
-        background-color: #0C2340 !important;
-        border: none !important;
-        transition: background-color 0.3s ease;
-    }
-    /* Force ALL text inside buttons to be white */
-    button * {
-        color: #ffffff !important;
-    }
-    /* Hover effect */
-    button:hover {
-        background-color: #BF0A30 !important;
-    }
-
-    /* 5. TABS - High Visibility */
-    /* The bar under the tabs */
-    [data-testid="stTabs"] {
-        background-color: transparent;
-    }
-    /* The text inside the tabs */
-    [data-testid="stMarkdownContainer"] p {
-        font-weight: bold;
-    }
-
-    /* 6. ARTICLE BOXES (The Bill text) */
+    button { background-color: #0C2340 !important; border: none !important; }
+    button * { color: #ffffff !important; }
+    button:hover { background-color: #BF0A30 !important; }
+    
     .article-box {
         background-color: #ffffff; 
         padding: 20px; 
@@ -188,15 +139,8 @@ st.markdown("""
         border-left: 6px solid #0C2340; 
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    .article-title { 
-        color: #0C2340 !important; 
-        font-size: 20px; 
-        font-weight: 800; 
-    }
-    .article-desc { 
-        color: #333333 !important; 
-        font-size: 16px; 
-    }
+    .article-title { color: #0C2340 !important; font-size: 20px; font-weight: 800; }
+    .article-desc { color: #333333 !important; font-size: 16px; }
     .note-text {
         color: #555555 !important;
         background-color: #eeeeee;
@@ -204,8 +148,6 @@ st.markdown("""
         font-style: italic;
         border-radius: 4px;
     }
-
-    /* 7. LINKS */
     a.bill-link {
         color: #ffffff !important;
         background-color: #BF0A30;
@@ -226,25 +168,27 @@ with st.sidebar:
     st.header("Support the Project")
     st.link_button("☕ Buy me a Coffee ($5)", DONATION_LINK)
     st.divider()
-    with st.expander("Admin"):
-        if os.path.isfile('pledges.csv'):
-            if st.button("⚠️ Reset Database"):
-                os.remove('pledges.csv')
-                st.rerun()
+    
+    # --- ADMIN PANEL (Google Sheets Version) ---
+    with st.expander("Admin Access"):
+        if st.button("Check Connection"):
+            try:
+                conn = st.connection("gsheets", type=GSheetsConnection)
+                df = conn.read(worksheet="Sheet1", ttl=0)
+                st.success(f"Connected! Total Signatures: {len(df)}")
+            except Exception as e:
+                st.error(f"Connection Failed: {e}")
 
 # --- MAIN PAGE ---
 
-
 st.title("The 80% Bill")
-
 st.markdown(" ")
-# tab1, tab2, tab3 = st.tabs(["Add Your Name", "Live Dashboard", "Read the Bill"]) !!!for live dashboard
+
 tab1, tab2 = st.tabs(["Add Your Name", "Read the Bill"])
 
 with tab1:
     if 'step' not in st.session_state: st.session_state.step = 1
 
-    # --- PLEDGE DISCLAIMER ---
     st.warning("By completing this form I am stating that I will not vote for anyone who does not actively support this bill.")
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -279,10 +223,12 @@ with tab1:
                 name = st.text_input("Full Name")
                 email_input = st.text_input("Email Address")
                 st.caption("We will email a 4-digit code to this address.")
+                
                 if st.form_submit_button("I will not vote for anyone who does not support this bill, unaltered"):
                     if name and email_input and "@" in email_input:
                         clean_email = email_input.strip().lower()
-                        if is_duplicate(clean_email): st.error(f"❌ '{clean_email}' has already signed.")
+                        if is_duplicate(clean_email): 
+                            st.error(f"❌ '{clean_email}' has already signed.")
                         else:
                             code = send_email_code(clean_email)
                             if code:
@@ -310,20 +256,6 @@ with tab1:
                             st.session_state.clear()
                             st.rerun()
                 else: st.error("Incorrect code.")
-
-# with tab2:
-#     st.header("Campaign Progress")
-#     if os.path.isfile('pledges.csv'):
-#         df = pd.read_csv('pledges.csv')
-#         if not df.empty:
-#             c1, c2, c3 = st.columns(3)
-#             c1.metric("Total Signatures", len(df))
-#             c2.metric("Districts Active", df['District'].nunique())
-#             st.divider()
-#             st.bar_chart(df['District'].value_counts())
-#             st.dataframe(df[['Name', 'District', 'Rep']].tail(5), use_container_width=True)
-#         else: st.info("No signatures yet.")
-#     else: st.info("No signatures yet.")
 
 with tab2:
     st.markdown("# Every single article below is supported by at least 80% of American voters.")
