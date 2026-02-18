@@ -312,36 +312,71 @@ tab1, tab2 = st.tabs(["Add Your Name", "Read the Bill"])
 
 with tab1:
     if 'step' not in st.session_state: st.session_state.step = 1
+    
+    # Initialize the manual override flag if it doesn't exist
+    if 'manual_entry' not in st.session_state: st.session_state.manual_entry = False
 
     st.warning("By completing this form I am stating that I will not vote for anyone who does not actively support this bill.")
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
+        # --- STEP 1: FIND DISTRICT (OR MANUAL ENTRY) ---
         if st.session_state.step == 1:
             st.subheader("Step 1: Verify your District")
-            st.info("We need your address to find your Congressional Representative.")
-            search_query = st.text_input("Enter your home address:", placeholder="e.g. 123 Main St, New York, NY")
-            if st.button("Find My District"):
-                with st.spinner("Searching map..."):
-                    results = get_osm_addresses(search_query)
-                    if results:
-                        st.session_state.address_options = {item['display_name']: item['display_name'] for item in results}
-                        st.session_state.show_results = True
-                    else: st.error("No address found. Please try again.")
-            if st.session_state.get('show_results'):
-                selected = st.selectbox("Confirm exact match:", list(st.session_state.address_options.keys()))
-                if st.button("This is my address"):
-                    district, rep = get_district(selected)
-                    if district:
-                        st.session_state.confirmed_address = selected
-                        st.session_state.district_info = (district, rep)
+            
+            # TOGGLE: "I know my district"
+            if st.button("📝 I know my district (Enter Manually)"):
+                st.session_state.manual_entry = True
+            
+            # OPTION A: MANUAL ENTRY
+            if st.session_state.manual_entry:
+                st.info("Enter your District (e.g., NY-14) and Representative's Name.")
+                manual_dist = st.text_input("District Code:", placeholder="e.g. NY-14")
+                manual_rep = st.text_input("Representative Name:", placeholder="e.g. Alexandria Ocasio-Cortez")
+                
+                if st.button("Use These Details"):
+                    if manual_dist and manual_rep:
+                        st.session_state.district_info = (manual_dist, manual_rep)
                         st.session_state.step = 2
                         st.rerun()
-                    else: st.error("District not found.")
+                    else:
+                        st.error("Please fill in both fields.")
+                        
+            # OPTION B: AUTOMATIC SEARCH (The Normal Way)
+            else:
+                st.info("We need your address to find your Congressional Representative.")
+                search_query = st.text_input("Enter your home address:", placeholder="e.g. 123 Main St, New York, NY")
+                
+                if st.button("Find My District"):
+                    with st.spinner("Searching map..."):
+                        results = get_osm_addresses(search_query)
+                        if results:
+                            st.session_state.address_options = {item['display_name']: item['display_name'] for item in results}
+                            st.session_state.show_results = True
+                        else: st.error("No address found. Please try again.")
+                
+                if st.session_state.get('show_results'):
+                    selected = st.selectbox("Confirm exact match:", list(st.session_state.address_options.keys()))
+                    if st.button("This is my address"):
+                        district, rep = get_district(selected)
+                        if district:
+                            st.session_state.confirmed_address = selected
+                            st.session_state.district_info = (district, rep)
+                            st.session_state.step = 2
+                            st.rerun()
+                        else: st.error("District not found. Try entering it manually.")
 
+        # --- STEP 2: VERIFY & SIGN ---
         elif st.session_state.step == 2:
             dist, rep = st.session_state.district_info
             st.success(f"You are in **{dist}** represented by **{rep}**.")
+            
+            # Allow them to go back if they made a mistake
+            if st.button("Wrong District? Change it."):
+                st.session_state.step = 1
+                st.session_state.manual_entry = False
+                st.rerun()
+
             with st.form("contact_form"):
                 st.subheader("Step 2: Verify & Sign")
                 name = st.text_input("Full Name")
@@ -354,18 +389,17 @@ with tab1:
                         if is_duplicate(clean_email): 
                             st.error(f"❌ '{clean_email}' has already signed.")
                         else:
-                            # TRY TO SEND EMAIL
+                            # --- EMAIL LOGIC WITH EMERGENCY BYPASS ---
                             code = send_email_code(clean_email)
                             
                             if code:
-                                # SUCCESS: Normal Verification Flow
+                                # Email Success: Normal Flow
                                 st.session_state.verification_code = code
                                 st.session_state.user_details = (name, clean_email)
                                 st.session_state.step = 3
                                 st.rerun()
                             else:
-                                # FAILURE (Limit Hit): EMERGENCY BYPASS
-                                # If email fails, we sign them anyway so we don't lose the user.
+                                # Email Failed (Limit Hit): BYPASS VERIFICATION
                                 save_pledge(name, clean_email, dist, rep)
                                 st.balloons()
                                 st.success("✅ High traffic detected! We skipped email verification and added your name.")
@@ -373,6 +407,7 @@ with tab1:
                                 
                     else: st.error("Invalid email.")
 
+        # --- STEP 3: CONFIRM CODE ---
         elif st.session_state.step == 3:
             st.subheader("Step 3: Confirm Sign-up")
             st.info(f"Checking for code sent to {st.session_state.user_details[1]} (check spam if you don't see it)")
@@ -390,8 +425,7 @@ with tab1:
                         if st.button("Start Over"):
                             st.session_state.clear()
                             st.rerun()
-                else: st.error("Incorrect code.")
-                    
+                else: st.error("Incorrect code.")       
 with tab2:
     st.markdown("# Every single article below is supported by at least 80% of American voters.")
     
